@@ -60,10 +60,16 @@ export function ClunkyTodoList() {
     setTasks(updatedTasks);
   };
 
+  const clearCompletedTasks = () => {
+    const updatedTasks = tasks.filter((task) => !task.completed);
+    setTasks(updatedTasks);
+  };
+
   return (
     <div className="container">
       <h1>To-Do List</h1>
       <h2>Items: {totalCount}</h2>
+      <button type="button" onClick={clearCompletedTasks}>Clear Completed Tasks</button>
       <div style={{ display: 'flex', gap: '8px' }}>
         <input
           type="text"
