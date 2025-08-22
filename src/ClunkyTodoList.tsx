@@ -1,5 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 
+/**
+ * Bugs:
+ * - Filter not working
+ * - Vertically and horizontally center the todo list
+ * - Count is incorrect
+ * Implement features
+ * - anchor element delete
+ * - clear completed button
+ * - add a new filter: only show tasks with 2 or more words
+ * Refactor/improvements
+ */
 export function ClunkyTodoList() {
   const [tasks, setTasks] = useState([
     { id: 1, text: "Learn React", completed: false },
