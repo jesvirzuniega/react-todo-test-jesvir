@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { FormEvent, useRef } from "react";
 import { TaskForm } from "./types";
 
 interface CreateTaskFormProps extends React.HTMLAttributes<HTMLFormElement> {
@@ -13,19 +13,20 @@ export default function CreateTaskForm({ handleAddTask, ...props }: CreateTaskFo
    * we can use a ref which saves us a lot of re-renders.
    */
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formRef.current) return;
     const formData = new FormData(formRef.current);
-    const taskText = formData.get('text') as string;
+    const taskText = (formData.get('text') as string).trim();
+    if (taskText === '') return;
     handleAddTask({ text: taskText, completed: false });
     formRef.current?.reset();
   };
 
   return (
-    <form onSubmit={handleSubmit} ref={formRef} {...props}>
-      <input type="text" placeholder="Add new task" name="text" />
-      <button onClick={handleSubmit}>Add</button>
+    <form action="" onSubmit={handleSubmit} ref={formRef} {...props}>
+      <input type="text" placeholder="Add new task" name="text" required />
+      <button type="submit">Add</button>
     </form>
   );
 }
