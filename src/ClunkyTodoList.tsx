@@ -55,6 +55,11 @@ export function ClunkyTodoList() {
   // No need to memoize this, `.length` is not an expensive operation, it's complexity is O(1) constant time.
   const totalCount = tasks.length;
 
+  const handleDeleteTask = (id: number) => {
+    const updatedTasks = tasks.filter((task) => task.id !== id);
+    setTasks(updatedTasks);
+  };
+
   return (
     <div className="container">
       <h1>To-Do List</h1>
@@ -88,6 +93,7 @@ export function ClunkyTodoList() {
             >
               {task.text}
             </span>
+            <a style={{ margin: '0 8px', cursor: 'pointer' }} onClick={() => handleDeleteTask(task.id)}>[x]</a>
           </li>
         ))}
       </ul>
