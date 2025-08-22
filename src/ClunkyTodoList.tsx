@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, memo } from "react";
 import { Task, TaskForm } from "./types";
 import CreateTaskForm from "./CreateTaskForm";
 import TaskList from "./TaskList";
@@ -9,6 +9,12 @@ const initialTasks: Task[] = [
   { id: 3, text: "Eat lunch", completed: false },
 ];
 
+/**
+ * Memoize the CreateTaskForm component to avoid unnecessary re-renders.
+ * For example, if the user deletes a task, the form will re-render whereas
+ * the form only concerns itself with adding a new task.
+ */
+const MemoizedCreateTaskForm = memo(CreateTaskForm);
 
 /**
  * Bugs:
@@ -42,7 +48,7 @@ export function ClunkyTodoList() {
     <div className="container">
       <h1>To-Do List</h1>
       <h2>Items: {totalCount}</h2>
-      <CreateTaskForm 
+      <MemoizedCreateTaskForm 
         handleAddTask={handleAddTask} 
         style={{ display: 'flex', gap: '8px', marginBottom: '8px' }} 
       />
