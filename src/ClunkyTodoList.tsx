@@ -56,16 +56,18 @@ export function ClunkyTodoList() {
   const totalCount = tasks.length;
 
   return (
-    <div>
+    <div className="container">
       <h1>To-Do List</h1>
       <h2>Items: {totalCount}</h2>
-      <input
-        type="text"
-        value={newTask}
-        onChange={handleInputChange}
-        placeholder="Add new task"
-      />
-      <button onClick={handleAddTask}>Add</button>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <input
+          type="text"
+          value={newTask}
+          onChange={handleInputChange}
+          placeholder="Add new task"
+        />
+        <button onClick={handleAddTask}>Add</button>
+      </div>
       <div>
         <button onClick={() => setFilter("all")}>All</button>
         <button onClick={() => setFilter("active")}>Active</button>
