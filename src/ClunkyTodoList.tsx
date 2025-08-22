@@ -1,4 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Task, StatusFilter, TaskForm } from "./types";
+import CreateTaskForm from "./CreateTaskForm";
+
+const initialTasks: Task[] = [
+  { id: 1, text: "Learn React", completed: false },
+  { id: 2, text: "Write code", completed: true },
+  { id: 3, text: "Eat lunch", completed: false },
+];
+
+const initialFilter: StatusFilter = "all";
 
 /**
  * Bugs:
@@ -12,27 +22,9 @@ import React, { useEffect, useMemo, useState } from "react";
  * Refactor/improvements
  */
 export function ClunkyTodoList() {
-  const [tasks, setTasks] = useState([
-    { id: 1, text: "Learn React", completed: false },
-    { id: 2, text: "Write code", completed: true },
-    { id: 3, text: "Eat lunch", completed: false },
-  ]);
-  const [newTask, setNewTask] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [filter, setFilter] = useState<StatusFilter>(initialFilter);
   const [onlyShowTasksWithTwoOrMoreWords, setOnlyShowTasksWithTwoOrMoreWords] = useState(false);
-
-  const handleInputChange = (event) => {
-    setNewTask(event.target.value);
-  };
-
-  const handleAddTask = () => {
-    if (newTask.trim() !== "") {
-      const tempTasks = [...tasks];
-      tempTasks.push({ id: Date.now(), text: newTask, completed: false });
-      setTasks(tempTasks);
-      setNewTask("");
-    }
-  };
 
   const handleToggleComplete = (id) => {
     const updatedTasks = tasks.map((task) => {
@@ -78,20 +70,28 @@ export function ClunkyTodoList() {
     setOnlyShowTasksWithTwoOrMoreWords(false);
   }
 
+  /**
+   * We can utilize useCallback to avoid unnecessary re-render 
+   * of this function EXCEPT when the tasks array changes because
+   * we use auto increment for the id.
+   */
+  const handleAddTask = useCallback((newTask: TaskForm) => {
+    const taskId = tasks.length + 1;
+    const newTasks = [...tasks, { id: taskId, ...newTask }]
+    setTasks(newTasks);
+  }, [tasks])
+
   return (
     <div className="container">
       <h1>To-Do List</h1>
       <h2>Items: {totalCount}</h2>
+      <CreateTaskForm 
+        handleAddTask={handleAddTask} 
+        style={{ display: 'flex', gap: '8px', marginBottom: '8px' }} 
+      />
+      <br/>
       <button type="button" onClick={clearCompletedTasks}>Clear Completed Tasks</button>
-      <div style={{ display: 'flex', gap: '8px' }}>
-        <input
-          type="text"
-          value={newTask}
-          onChange={handleInputChange}
-          placeholder="Add new task"
-        />
-        <button onClick={handleAddTask}>Add</button>
-      </div>
+      <br/>
       <div>
         <button type="button" style={filter === 'all' && !onlyShowTasksWithTwoOrMoreWords ? { color: 'green' } : {}} onClick={resetFilter}>All</button>
         <button type="button" style={filter === 'active' ? { color: 'green' } : {}} onClick={() => setFilter("active")}>Active</button>
@@ -99,8 +99,8 @@ export function ClunkyTodoList() {
         <button type="button" style={onlyShowTasksWithTwoOrMoreWords ? { color: 'green' } : {}} onClick={() => setOnlyShowTasksWithTwoOrMoreWords(!onlyShowTasksWithTwoOrMoreWords)}>2+ words only</button>
       </div>
       <ul>
-        {tasksToRender.map((task, index) => (
-          <li key={index}>
+        {tasksToRender.map((task) => (
+          <li key={task.id}>
             <input
               type="checkbox"
               checked={task.completed}
