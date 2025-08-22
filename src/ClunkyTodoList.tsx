@@ -19,6 +19,7 @@ export function ClunkyTodoList() {
   ]);
   const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("all");
+  const [onlyShowTasksWithTwoOrMoreWords, setOnlyShowTasksWithTwoOrMoreWords] = useState(false);
 
   const handleInputChange = (event) => {
     setNewTask(event.target.value);
@@ -47,10 +48,12 @@ export function ClunkyTodoList() {
 
   const [tasksToRender, setTasksToRender] = useState<any[]>([])
   useEffect(() => {
-    if (filter === 'all') return setTasksToRender(tasks); // Since there are no other filters, return early if all is selected. No need to filter.
-    const filteredTasks = tasks.filter((task) => task.completed === (filter === 'completed'));
+    let filteredTasks = filter === 'all' ? tasks : tasks.filter((task) => task.completed === (filter === 'completed'));
+    if (onlyShowTasksWithTwoOrMoreWords) {
+      filteredTasks = filteredTasks.filter((task) => task.text.trim().split(' ').length >= 2);
+    }
     setTasksToRender(filteredTasks);
-  }, [tasks, filter]); // add filter to dependencies
+  }, [tasks, filter, onlyShowTasksWithTwoOrMoreWords]); // add filter to dependencies
 
   // No need to memoize this, `.length` is not an expensive operation, it's complexity is O(1) constant time.
   const totalCount = tasks.length;
@@ -64,6 +67,16 @@ export function ClunkyTodoList() {
     const updatedTasks = tasks.filter((task) => !task.completed);
     setTasks(updatedTasks);
   };
+
+  /**
+   * Since we added a new filter that works alongside active/completed,
+   * It doesn't make sense for user to click `all` and 2+ words filter is still active.
+   * So let's reset all filters when user clicks `all` button.
+   */
+  const resetFilter = () => {
+    setFilter("all");
+    setOnlyShowTasksWithTwoOrMoreWords(false);
+  }
 
   return (
     <div className="container">
@@ -80,9 +93,10 @@ export function ClunkyTodoList() {
         <button onClick={handleAddTask}>Add</button>
       </div>
       <div>
-        <button onClick={() => setFilter("all")}>All</button>
-        <button onClick={() => setFilter("active")}>Active</button>
-        <button onClick={() => setFilter("completed")}>Completed</button>
+        <button type="button" style={filter === 'all' && !onlyShowTasksWithTwoOrMoreWords ? { color: 'green' } : {}} onClick={resetFilter}>All</button>
+        <button type="button" style={filter === 'active' ? { color: 'green' } : {}} onClick={() => setFilter("active")}>Active</button>
+        <button type="button" style={filter === 'completed' ? { color: 'green' } : {}} onClick={() => setFilter("completed")}>Completed</button>
+        <button type="button" style={onlyShowTasksWithTwoOrMoreWords ? { color: 'green' } : {}} onClick={() => setOnlyShowTasksWithTwoOrMoreWords(!onlyShowTasksWithTwoOrMoreWords)}>2+ words only</button>
       </div>
       <ul>
         {tasksToRender.map((task, index) => (
