@@ -47,18 +47,13 @@ export function ClunkyTodoList() {
 
   const [tasksToRender, setTasksToRender] = useState<any[]>([])
   useEffect(() => {
-    let filteredTasks = tasks;
-    if (filter === "completed") {
-      filteredTasks = tasks.filter((task) => task.completed);
-    } else if (filter === "active") {
-      filteredTasks = tasks.filter((task) => !task.completed);
-    }
+    if (filter === 'all') return setTasksToRender(tasks); // Since there are no other filters, return early if all is selected. No need to filter.
+    const filteredTasks = tasks.filter((task) => task.completed === (filter === 'completed'));
     setTasksToRender(filteredTasks);
-  }, [tasks]);
+  }, [tasks, filter]); // add filter to dependencies
 
-  const totalCount = useMemo(() => {
-    return tasks.length;
-  }, []);
+  // No need to memoize this, `.length` is not an expensive operation, it's complexity is O(1) constant time.
+  const totalCount = tasks.length;
 
   return (
     <div>
