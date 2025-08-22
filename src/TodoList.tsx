@@ -1,4 +1,4 @@
-import React, { useCallback, useState, memo } from "react";
+import React, { useCallback, useState, memo, useMemo } from "react";
 import { Task, TaskForm } from "./types";
 import CreateTaskForm from "./CreateTaskForm";
 import TaskList from "./TaskList";
@@ -16,18 +16,7 @@ const initialTasks: Task[] = [
  */
 const MemoizedCreateTaskForm = memo(CreateTaskForm);
 
-/**
- * Bugs:
- * - Filter not working
- * - Vertically and horizontally center the todo list
- * - Count is incorrect
- * Implement features
- * - anchor element delete
- * - clear completed button
- * - add a new filter: only show tasks with 2 or more words
- * Refactor/improvements
- */
-export function ClunkyTodoList() {
+export function TodoList() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
   // No need to memoize this, `.length` is not an expensive operation, it's complexity is O(1) constant time.
